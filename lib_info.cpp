@@ -12,7 +12,6 @@
 	NOW ONTO STEP 2
 */
 
-
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -20,6 +19,7 @@
 #include <map>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
 
 using namespace std; 
 
@@ -44,12 +44,13 @@ struct Artist {
 };
 
 int time_conversion(const string time);
+string Remove_Underscore(string name);
 
 int main(int argc, char **argv)
 {
 	stringstream ss; 
 	ifstream fin; 
-	string line, file, junk; 
+	string line, file, junk, trash = "H_III_I_"; 
 
 	Song a; 
 	Album b; 
@@ -81,11 +82,12 @@ int main(int argc, char **argv)
 
 		//cout << "Title = " << a.title << "   Time = " << a.time << "   Artist = " << c.name <<  "   Album = " << b.name << "   Track # = " << a.track << "    junk = " << junk << endl; 
 		
-		/* Converts the time to an int */ 
+		// Converts the time to an int  
 		time_conversion(a.time); 
 
 		ss.clear();
 	}
+	
 	return 0; 
 }//end main
 
@@ -128,3 +130,25 @@ int time_conversion(const string time)
 
 	return total_time; 
 }//end time_conversion
+
+string Remove_Underscore(string name)
+{
+	// FROM CS140-LAB7, CODE_PROCESSOR.CPP
+	// 	map <string, Prize *>::const_iterator pit = Prizes.find(id); 
+
+	/*
+		STEP 3 & 4 COULD USE THIS, BUT THAT IS IF WE USE THE FIND FUNCTION
+
+		if (uit	!= Names.end()) return false;
+	*/
+
+
+	// may screw up; to fix: change to const string &name
+	for(int i = 0; i < (int)name.size(); i++){
+		if(name[i] == '_'){
+			name[i] = ' ';
+		}
+	}
+	return name; 
+
+}
