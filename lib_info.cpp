@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 {
 	stringstream ss; 
 	ifstream fin; 
-	string line, file = argv[1], junk; 
+	string line, file, junk; 
 
 	Song a; 
 	Album b; 
@@ -63,15 +63,17 @@ int main(int argc, char **argv)
 	}
 
 	/* Opens up the file specified and makes sure it can be opened */
+	file = argv[1];
 	fin.open(file.c_str()); 
 
+	/* Checks to see if it can open the file specified */
 	if (fin.fail()) 
 	{
 		cerr << "Cannot open file\n"; 
 		return -1; 
 	}
 
-
+	/* Reads in everything from the file */
 	while(getline(fin, line))
 	{
 		ss.str(line); 
@@ -84,7 +86,6 @@ int main(int argc, char **argv)
 
 		ss.clear();
 	}
-
 	return 0; 
 }//end main
 
