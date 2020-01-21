@@ -54,7 +54,6 @@ int main(int argc, char **argv)
 {
 	stringstream ss; 
 	ifstream fin; 
-<<<<<<< HEAD
 	string line, file, junk; 
 	Song *a, aa; 
 	Album *b, bb; 
@@ -99,7 +98,6 @@ int main(int argc, char **argv)
 	
 		cout << Add_Artist(artists, c->name, c) << c->name << endl;
 		
-<<<<<<< HEAD
 		arit = artists.find(c->name);
 
 		cout << Add_Album(arit->second->albums, artists, b->name, c->name, c, b) << b->name << endl;
