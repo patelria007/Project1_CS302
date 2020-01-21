@@ -45,14 +45,18 @@ struct Artist {
 
 int time_conversion(const string time);
 string Remove_Underscore(string name);
+<<<<<<< HEAD
 string Add_Artist(map <string, Artist*> &artists, string artist_name, Artist* person);
 string Add_Album(map <string, Album*> &albums, map <string, Artist*> &artists, string album_name, string artist_name, Artist* person, Album* cover);
 void Add_Songs(map <int, Song*> &songs, string title, int time, int track, Song* song);
+=======
+>>>>>>> 83a7fd1d9b5e414bcda996a7a6272204bb9f9e21
 
 int main(int argc, char **argv)
 {
 	stringstream ss; 
 	ifstream fin; 
+<<<<<<< HEAD
 	string line, file, junk; 
 	Song *a, aa; 
 	Album *b, bb; 
@@ -65,6 +69,13 @@ int main(int argc, char **argv)
 	map <string, Artist*>::const_iterator arit;
 	map <string, Album*>::const_iterator ait; 
 	map <int, Song*>::const_iterator sit; 
+=======
+	string line, file, junk, trash = "H_III_I_"; 
+
+	Song a; 
+	Album b; 
+	Artist c; 
+>>>>>>> 83a7fd1d9b5e414bcda996a7a6272204bb9f9e21
 
 	/* Check if there is a correct number of arguments */
 	if (argc != 2) 
@@ -97,6 +108,7 @@ int main(int argc, char **argv)
 	
 		cout << Add_Artist(artists, c->name, c) << c->name << endl;
 		
+<<<<<<< HEAD
 		arit = artists.find(c->name);
 
 		cout << Add_Album(arit->second->albums, artists, b->name, c->name, c, b) << b->name << endl;
@@ -104,6 +116,10 @@ int main(int argc, char **argv)
 		ait = arit->second->albums.find(b->name);
 
 		Add_Songs(ait->second->songs, a->title, time_conversion(a->time), a->track, a); 
+=======
+		// Converts the time to an int  
+		time_conversion(a.time); 
+>>>>>>> 83a7fd1d9b5e414bcda996a7a6272204bb9f9e21
 
 		ss.clear();
 	}	
@@ -118,8 +134,11 @@ int main(int argc, char **argv)
 		}
 	}
 	
+<<<<<<< HEAD
 	
 
+=======
+>>>>>>> 83a7fd1d9b5e414bcda996a7a6272204bb9f9e21
 	return 0; 
 }//end main
 
@@ -165,13 +184,28 @@ int time_conversion(const string time)
 
 string Remove_Underscore(string name)
 {
+<<<<<<< HEAD
 	/* Finds the underscore and removes it */
+=======
+	// FROM CS140-LAB7, CODE_PROCESSOR.CPP
+	// 	map <string, Prize *>::const_iterator pit = Prizes.find(id); 
+
+	/*
+		STEP 3 & 4 COULD USE THIS, BUT THAT IS IF WE USE THE FIND FUNCTION
+
+		if (uit	!= Names.end()) return false;
+	*/
+
+
+	// may screw up; to fix: change to const string &name
+>>>>>>> 83a7fd1d9b5e414bcda996a7a6272204bb9f9e21
 	for(int i = 0; i < (int)name.size(); i++){
 		if(name[i] == '_'){
 			name[i] = ' ';
 		}
 	}
 	return name; 
+<<<<<<< HEAD
 }//end Remove_Underscore
 
 string Add_Artist(map <string, Artist*> &artists, string artist_name, Artist* person) 
@@ -234,4 +268,7 @@ void Add_Songs(map <int, Song*> &songs, string title, int time, int track, Song*
 	/* Inserts the song into the song map under the correct album */
 	songs[track] = song; 
 	
+=======
+
+>>>>>>> 83a7fd1d9b5e414bcda996a7a6272204bb9f9e21
 }
