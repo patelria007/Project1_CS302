@@ -104,7 +104,7 @@ int main(int argc, char **argv)
 
 		ait = arit->second->albums.find(b->name);
 
-		time_conversion(a.time); 
+		time_conversion(a->time); 
 		Add_Songs(ait->second->songs, a->title, time_conversion(a->time), a->track, a); 
 
 		// Converts the time to an int  
