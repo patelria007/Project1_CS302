@@ -1,31 +1,28 @@
 /* Ria Patel & Skylar White
  * Project 1 - Lib_info
  * Description: 
- * This program reads in music information from a file and formats the names of the artists
- * along with their albums and the songs included. It also displays the total time of each album 
- * and how many songs the artists have. 
+ * This program reads in music information from a file and formats the names of
+ * the artists along with their albums and the songs included. It also displays
+ * the total time of each album and how many songs the artists have. 
+ * ------------------------------------------------------------------------------
+ * PLEASE NOTE: 
+ * Some functions are very long, so we decided to condense them on multiple lines
+ * for convenience purposes.
+ * 
  */
-
-
-/*
-	STEP ONE DONE!!!
-	NOW ONTO STEP 2
-*/
 
 #include <iostream>
 #include <vector>
-#include <cstdlib>
-#include <deque>
 #include <map>
 #include <fstream>
 #include <sstream>
-#include <algorithm>
 
 using namespace std; 
 
+/* Provided by write up */
 struct Song { 
 	string title;
-	string time;  // was an int before. I changed it to string
+	string time;  //Changed to string, but it was an int in the writeup
 	int track;
 };
 
@@ -33,7 +30,7 @@ struct Album {
 	map <int, Song*> songs;
 	string name;
 	int time;
-	int nsongs;  // optional variable but makes it easier
+	int nsongs;  
 };
 
 struct Artist {
@@ -43,28 +40,34 @@ struct Artist {
 	int nsongs;
 };
 
-int time_conversion(const string time);
+/* List of Functions */
+int time_conversion(const string time);	//Conversion from string to int
+string int_to_string(const int time);	//Conversion from int to string
 string Remove_Underscore(string name);
-string Add_Artist(map <string, Artist*> &artists, string artist_name, Artist* person);
-string Add_Album(map <string, Album*> &albums, map <string, Artist*> &artists, string album_name, string artist_name, Artist* person, Album* cover);
-void Add_Songs(map <int, Song*> &songs, string title, int time, int track, Song* song);
+void Add_Artist(map <string, Artist*> &artists, string artist_name);
+void Add_Album(map <string, Album*> &albums, map <string, Artist*> &artists,
+	string album_name, string artist_name);
+void Add_Songs(map <int, Song*> &songs, string title, string time, int track, 
+	Album* cover, Artist* person);
+void Self_Destruct(map <string, Artist*> artists); //Deletes all memory declared
 
 int main(int argc, char **argv)
 {
 	stringstream ss; 
 	ifstream fin; 
 	string line, file, junk; 
+
 	Song *a, aa; 
 	Album *b, bb; 
 	Artist *c, cc;
+
+	/* All of the maps and their iterators */
 	map<string, Artist*> artists;
 	map<string, Album*> albums; 
 	map<int, Song*> songs; 
-
-	//Iterator?
-	map <string, Artist*>::const_iterator arit;
-	map <string, Album*>::const_iterator ait; 
-	map <int, Song*>::const_iterator sit; 
+	map <string, Artist*>::const_iterator arit;	//Pointer for artist struct
+	map <string, Album*>::const_iterator ait;	//Pointer for album struct
+	map <int, Song*>::const_iterator sit; 	//Pointer for song struct
 
 	/* Check if there is a correct number of arguments */
 	if (argc != 2) 
@@ -92,34 +95,55 @@ int main(int argc, char **argv)
 		b = &bb;
 		c = &cc;
 		
+		/* Parses each line of the file */
 		ss.str(line); 
 		ss >> a->title >> a->time >> c->name >> b->name >> junk >> a->track; 
-	
-		cout << Add_Artist(artists, c->name, c) << c->name << endl;
 		
+		/* Removes the underscores in all of the strings */
+		c->name = Remove_Underscore(c->name);
+		b->name = Remove_Underscore(b->name);
+		a->title = Remove_Underscore(a->title);
+
+
+		Add_Artist(artists, c->name);
+		
+		/* Creates a pointer to the current artist */	
 		arit = artists.find(c->name);
+		Add_Album(arit->second->albums, artists, b->name, c->name);
 
-		cout << Add_Album(arit->second->albums, artists, b->name, c->name, c, b) << b->name << endl;
-
+		/* Creates a pointer to the current album */
 		ait = arit->second->albums.find(b->name);
-
-		Add_Songs(ait->second->songs, a->title, time_conversion(a->time), a->track, a); 
+		Add_Songs(ait->second->songs, a->title, a->time, a->track, ait->second,
+			 arit->second); 
 
 		ss.clear();
 	}	
-	
-	for (arit = artists.begin(); arit != artists.end(); arit++) 
-	{
-		for (ait = arit->second->albums.begin(); ait != arit->second->albums.end(); ait++)
-		{
-			cout << "Album title: " << ait->first << endl;
-			for (sit = ait->second->songs.begin(); sit != ait->second->songs.end(); sit++)
-				cout << "\t" << sit->first << ". " << sit->second->title << ": " << sit->second->time << endl; 
-		}
+		
+	/* Adds all of the album total times under the correct artist */
+	for (arit = artists.begin(); arit != artists.end(); arit++) {
+		for (ait = arit->second->albums.begin(); ait != arit->second->albums.end();
+			 ait++) arit->second->time += ait->second->time;
 	}
 	
-	
+	/* Prints all artists, albums, and songs to standard input */
+	for (arit = artists.begin(); arit != artists.end(); arit++) 
+	{
+		cout << arit->first << ": "<< arit->second->nsongs << ", " << 
+			int_to_string(arit->second->time) << '\n';
+		for (ait = arit->second->albums.begin(); ait != arit->second->albums.end(); ait++)
+		{
+			cout << "        " << ait->first << ": " << ait->second->nsongs << ", " 
+				 << int_to_string(ait->second->time) << endl;
+			for (sit = ait->second->songs.begin(); sit != ait->second->songs.end(); sit++)
+				cout << "                " << sit->first << ". " << sit->second->title 
+					 << ": " << sit->second->time << endl; 
+				
+		}
+	}
 
+	/* Deletes all of the songs, albums, and artists to prevent memory leaks */
+	Self_Destruct(artists);
+	
 	return 0; 
 }//end main
 
@@ -129,39 +153,56 @@ int time_conversion(const string time)
 	int min, sec, total_time;
 	bool change = false;
 
+	
+	/* When it finds the colon, it ends adding to num1 string and starts num2 string */
 	for (int i = 0; i < (int)time.size(); i++)
 	{
-		/* Int & no colon */
+		/* Found an int & no colons */
 		if (time[i] >= 48 && time[i] <= 57 && change == false) 
 		{
 			num1 += time[i]; 
 		} 
-		/* int & found colon */
+		/* Found an int & a colon */
 		else if (time[i] >= 48 && time[i] <= 57 && change == true)
 		{
 			num2 += time[i]; 
 		}
-		/* found colon */
-		else change = true;  
+		else change = true;  // Boolean signals a switch to the num2 string
 	}
 
-	/* CONVERSIONS */
+	
+	/* 
+		Conversions - Used http://www.cplusplus.com/reference/string/stoi/ 
+		to see syntax of stoi function 
+	*/
 	min = stoi(num1); 
 	sec = stoi(num2);
 	total_time = (min * 60) + sec; 
 
-	//TESTER STATEMENT TO SEE IF CONVERSION WORKED
-	//cout << "  total time = " << total_time << endl;
-
-	min = 0; 
-	sec = 0; 
-	total_time = 0; 
-	num1 = "";
-	num2 = ""; 
-	change = false; 
-
 	return total_time; 
 }//end time_conversion
+
+string int_to_string(const int time)
+{
+	int min, sec; 
+	string converted; 
+	
+	/* Converts the total seconds into minutes and seconds */
+	min = time / 60; 
+	sec = time % 60; 
+
+	if (sec < 10) {
+		/* Just adds a 0 in front of the single digit to fix formatting issues */
+		converted = to_string(min) + ":0" + to_string(sec); 
+	} else {
+		/* 
+			Used http://www.cplusplus.com/reference/string/to_string/ 
+			to see syntax of to_string function */
+		converted = to_string(min) + ":" + to_string(sec); 
+	}
+
+	return converted; 
+}//end string int_to_string
 
 string Remove_Underscore(string name)
 {
@@ -174,64 +215,109 @@ string Remove_Underscore(string name)
 	return name; 
 }//end Remove_Underscore
 
-string Add_Artist(map <string, Artist*> &artists, string artist_name, Artist* person) 
+void Add_Artist(map <string, Artist*> &artists, string artist_name) 
 {
 	map <string, Artist*>::const_iterator ait = artists.find(artist_name); 
 
-	/* Check if the artist is already there. If they are, then "Old Artist" */
-	if (ait != artists.end()) return "Old Artist: "; 
+	/* Check if the artist is already there. If they are, then return */
+	if (ait != artists.end()) return; 
 	
-	/* Creating the new artist by adding their name, total song time, and number of songs they have */	
+	/* Creates the new artist by adding their name, total album times, and total songs they have */
+	Artist* person; 	
 	person = new Artist; 
 	person->name = artist_name;
-	person->time = 0; // will fix later
-	person->nsongs = 0; //for right now, will fix later
+	person->time = 0; //Initialized to 0, but will be fixed in a later function
+	person->nsongs = 0; //Same thing
 
 	/* Inserts artist into the artist map */
 	artists[artist_name] = person;
 	
-	return "New Artist: ";
+	return;
 }//end Add_Artist
 
-string Add_Album(map <string, Album*> &albums, map <string, Artist*> &artists, string album_name, string artist_name, Artist* person, Album* cover) 
+void Add_Album(map <string, Album*> &albums, map <string, Artist*> &artists, 
+			   string album_name, string artist_name)
 {
 	map <string, Album*>::const_iterator ait = albums.find(album_name); 
 	map <string, Artist*>::const_iterator arit = artists.find(artist_name);
 
-	/* Check if the artist is already there. If they are, then "Old Artist" */
-	if (ait != albums.end()) 
-	{
-		// do Add_Song function here
-		return "Old Album: "; 
-	}
-	/* Creating new albums for an artist by adding the album name, the total album song time, and the number of songs in it */
+	/* Check if the artist is already there. If they are, then return */
+	if (ait != albums.end()) return; 
+
+	/* 
+		Creating new albums for an artist by adding the album name, the total
+		 album song time, and the number of songs in it 
+	*/
+	Album* cover;
 	cover = new Album; 
 	cover->name = album_name;
-	cover->time = 0; // will fix later
-	cover->nsongs = 0; //for right now, will fix later
+	cover->time = 0; 
+	cover->nsongs = 0;
 
 	/* Inserts the album into the album map under the specific artist */
 	artists[artist_name]->albums.insert(make_pair(album_name, cover)); 
 	
-	// Add_Song function here
-	
-	return "New Album: ";
+	return;
 }//end Add_Album
 
-void Add_Songs(map <int, Song*> &songs, string title, int time, int track, Song* song)
+void Add_Songs(map <int, Song*> &songs, string title, string time,
+			   int track, Album* cover, Artist* person)
 {
 	map <int, Song*>::const_iterator sit = songs.find(track);
 
 	/* Check if the track number exists */
 	if (sit != songs.end()) return; 
 	 
-	/* Creates the new song by adding the title, song time, and the track number in the album */ 
+	/* 
+		Creates the new song by adding the title, song time, and the track 
+		number in the album 
+	*/ 
+	Song* song;
 	song = new Song; 
 	song->title = title;
 	song->track = track;
 	song->time = time;
 
-	/* Inserts the song into the song map under the correct album */
+	/* 	
+		Inserts the song into the song map under the correct album & add to the
+	 	total number of songs in the album & artist 
+	*/
 	songs[track] = song; 
+	cover->nsongs++;
+	cover->time += time_conversion(time);
 	
-}
+	person->nsongs++; 
+}//end Add_Songs
+
+void Self_Destruct(map <string, Artist*> artists)
+{
+	Song *song; 
+	Album *album; 
+	Artist *artist; 
+
+	/* Map iterators */
+	map <string, Artist*>::const_iterator arit;
+	map <string, Album*>::const_iterator ait; 
+	map <int, Song*>::const_iterator sit; 
+
+	/* 
+		Goes through all of the maps, starting with the songs map, to delete 
+		each song, album, and artist. 
+		Purpose: To prevent memory leaks
+	*/
+	for (arit = artists.begin(); arit != artists.end(); arit++) 
+	{
+		for (ait = arit->second->albums.begin(); ait != arit->second->albums.end(); ait++)
+		{
+			for (sit = ait->second->songs.begin(); sit != ait->second->songs.end(); sit++)
+			{
+				song = sit->second;
+				delete song;
+			}
+			album = ait->second;
+			delete album;
+		}
+		artist = arit->second;
+		delete artist;
+	}
+}//end Self_Destruct
